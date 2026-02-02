@@ -4,18 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
-  <!-- 🔥 WHATSAPP PREVIEW (THIS IS WHAT MATTERS) -->
-  <meta property="og:title" content="Gaavvv, will you be my Valentine? 💖">
-  <meta property="og:description" content="I made something special just for you… tap to open 🥰">
+  <!-- 🔥 WHATSAPP PREVIEW (SECRET & CURIOUS) -->
+  <meta property="og:title" content="For you 💫">
+  <meta property="og:description" content="I made something and I think you should see this…">
   <meta property="og:type" content="website">
 
-  <!-- OPTIONAL but recommended -->
-  <meta property="og:image" content="https://media.giphy.com/media/26ufdipQqU2lhNA4g/giphy.gif">
-  <meta property="og:image:type" content="image/gif">
+  <!-- Neutral preview image -->
+  <meta property="og:image" content="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif">
   <meta property="og:image:width" content="480">
   <meta property="og:image:height" content="270">
 
-  <title>Gaavvv 💖</title>
+  <title>Hey 🙂</title>
 
   <!-- Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
@@ -94,9 +93,11 @@
       transform-origin: center;
     }
 
-    #yesBtn:hover { background: var(--yesHover); }
+    #yesBtn:hover {
+      background: var(--yesHover);
+    }
 
-    /* 🔒 NO = UNCLICKABLE */
+    /* 🔒 NO = IMPOSSIBLE TO CLICK */
     #noBtn {
       left: 62%;
       background: #e5e7eb;
@@ -118,4 +119,104 @@
       animation: pop .35s ease;
     }
 
-    @key
+    @keyframes pop {
+      from { transform: scale(.96); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="confettiCanvas"></canvas>
+
+  <main class="card">
+    <!-- 💖 REVEAL AFTER CLICK -->
+    <h1>Gaavvv, will you be my Valentine? 💖</h1>
+
+    <section class="button-zone" id="zone">
+      <button id="yesBtn">Yes</button>
+      <button id="noBtn">No</button>
+    </section>
+
+    <div class="hint">Try tapping “No” 😈</div>
+
+    <section class="result" id="result">
+      <h2>You’re officially my Valentine 💘</h2>
+      <img
+        src="https://media.giphy.com/media/26ufdipQqU2lhNA4g/giphy.gif"
+        width="260"
+        alt="Celebration"
+      />
+    </section>
+  </main>
+
+  <script>
+    const zone = document.getElementById("zone");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const result = document.getElementById("result");
+    const confettiCanvas = document.getElementById("confettiCanvas");
+
+    /* CONFETTI */
+    function resizeConfetti() {
+      const dpr = window.devicePixelRatio || 1;
+      confettiCanvas.width = innerWidth * dpr;
+      confettiCanvas.height = innerHeight * dpr;
+    }
+    resizeConfetti();
+    addEventListener("resize", resizeConfetti);
+
+    const confettiInstance = confetti.create(confettiCanvas, {
+      resize: false,
+      useWorker: true
+    });
+
+    function fireConfetti() {
+      const end = Date.now() + 1500;
+      (function frame() {
+        confettiInstance({
+          particleCount: 12,
+          spread: 100,
+          startVelocity: 45,
+          origin: { x: Math.random(), y: Math.random() * 0.3 }
+        });
+        if (Date.now() < end) requestAnimationFrame(frame);
+      })();
+    }
+
+    /* YES GROWS */
+    let yesScale = 1;
+    function growYes() {
+      yesScale = Math.min(2.3, yesScale + 0.1);
+      yesBtn.style.transform = `translateY(-50%) scale(${yesScale})`;
+    }
+
+    /* 🔥 NO TELEPORTS (UNCATCHABLE) */
+    function teleportNo() {
+      const z = zone.getBoundingClientRect();
+      const b = noBtn.getBoundingClientRect();
+      const pad = 10;
+
+      const x = Math.random() * (z.width - b.width - pad * 2) + pad;
+      const y = Math.random() * (z.height - b.height - pad * 2) + pad;
+
+      noBtn.style.left = x + "px";
+      noBtn.style.top  = y + "px";
+
+      growYes();
+    }
+
+    zone.addEventListener("touchstart", teleportNo);
+    zone.addEventListener("touchmove", teleportNo);
+    zone.addEventListener("pointermove", teleportNo);
+
+    /* YES CLICK */
+    yesBtn.addEventListener("click", () => {
+      zone.style.display = "none";
+      document.querySelector(".hint").style.display = "none";
+      result.style.display = "block";
+      fireConfetti();
+    });
+  </script>
+</body>
+</html>
